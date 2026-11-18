@@ -39,6 +39,8 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            flex-wrap: wrap;
+            gap: 10px;
         }
         .topbar-title {
             font-size: 20px;
@@ -91,6 +93,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            text-decoration: none;
         }
         .btn:hover { background-color: var(--accent-hover); }
         
@@ -115,6 +118,36 @@
         .btn-danger:hover {
             background-color: #fef2f2;
             border-color: var(--danger);
+        }
+
+        .btn-danger-solid {
+            background-color: var(--danger);
+            color: #ffffff;
+        }
+        .btn-danger-solid:hover {
+            background-color: var(--danger-hover);
+        }
+
+        /* כפתורי מצב תצוגה בספר */
+        .toggle-visible {
+            background-color: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .toggle-hidden {
+            background-color: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #cbd5e1;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         /* שדות קלט */
@@ -191,6 +224,11 @@
             border-radius: 6px;
             padding: 20px;
             margin-bottom: 16px;
+            transition: opacity 0.2s;
+        }
+        .sub-box.dimmed {
+            opacity: 0.65;
+            background: #f1f5f9;
         }
 
         .code-badge {
@@ -255,7 +293,10 @@
 <body>
 
 <div class="topbar no-print">
-    <div class="topbar-title">מערכת ניהול ספר סיפורים כיתתי | פורטל מורה</div>
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <a href="index.html" class="btn btn-outline">&rarr; חזור לדף הראשי</a>
+        <div class="topbar-title">מערכת ניהול ספר סיפורים כיתתי | פורטל מורה</div>
+    </div>
     <button id="logout-btn" class="btn btn-danger hidden" onclick="teacherLogout()">יציאה מהמערכת</button>
 </div>
 
@@ -328,8 +369,9 @@
 
     <!-- מסך ניהול כיתה ספציפית -->
     <div id="class-screen" class="hidden">
-        <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
             <button class="btn btn-outline" onclick="backToMain()">&rarr; חזרה לרשימת הכיתות</button>
+            <button class="btn btn-danger" onclick="deleteCurrentClass()">מחק כיתה</button>
         </div>
 
         <div class="panel">
@@ -376,11 +418,14 @@
         <div class="panel">
             <h2>עריכת דברי פתיחה וברכות לספר</h2>
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
-                קטעים שיישארו ריקים לא ייכללו בהדפסת הספר הסופי.
+                בכל קטע ניתן לבחור באמצעות הכפתור העליון האם להציג אותו בספר הסופי או להסתיר אותו.
             </p>
             
-            <div class="sub-box">
-                <h3>1. דבר המחנכת (עמוד פתיחה ראשי)</h3>
+            <div id="greeting-box-0" class="sub-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="margin: 0;">1. דבר המחנכת (עמוד פתיחה ראשי)</h3>
+                    <button type="button" id="toggle-btn-0" class="toggle-visible" onclick="toggleGreetingVisibility(0)">👁️ להראות בספר (מוצג)</button>
+                </div>
                 <label>כותרת הקטע</label>
                 <input type="text" id="greeting-title-0" value="דבר המחנכת">
                 <label>תוכן הדברים</label>
@@ -412,7 +457,7 @@
 <!-- חיבור ל-Firebase -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     // =========================================================================
     // הגדרת סיסמת המורה
@@ -439,6 +484,9 @@
     let currentClassId = "";
     let currentClassData = null;
     let unsubscribeStudents = null;
+    
+    // מערך לשמירת מצב התצוגה (true = להראות בספר, false = לא להראות)
+    let greetingsVisibility = new Array(11).fill(true);
 
     // אימות סיסמת המורה
     window.verifyTeacherPassword = () => {
@@ -469,19 +517,42 @@
         document.getElementById('teacher-login-screen').classList.remove('hidden');
     };
 
-    // יצירת 10 תיבות נוספות לדבר היועצת, מנהל וכו'
+    // יצירת 10 תיבות נוספות לדבר היועצת, מנהל וכו' עם כפתור הצגה/הסתרה
     const extraContainer = document.getElementById('extra-greetings-container');
     const defaultTitles = ["דבר המנהל/ת", "דבר היועצת", "דבר הרכזת", "ברכה נוספת 4", "ברכה נוספת 5", "ברכה נוספת 6", "ברכה נוספת 7", "ברכה נוספת 8", "ברכה נוספת 9", "ברכה נוספת 10"];
     for (let i = 1; i <= 10; i++) {
         extraContainer.innerHTML += `
-            <div class="sub-box">
-                <h3>${i + 1}. קטע פתיחה נוסף</h3>
+            <div id="greeting-box-${i}" class="sub-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="margin: 0;">${i + 1}. קטע פתיחה נוסף</h3>
+                    <button type="button" id="toggle-btn-${i}" class="toggle-visible" onclick="toggleGreetingVisibility(${i})">👁️ להראות בספר (מוצג)</button>
+                </div>
                 <label>כותרת הקטע</label>
                 <input type="text" id="greeting-title-${i}" value="${defaultTitles[i-1]}">
                 <label>תוכן הדברים</label>
                 <textarea id="greeting-text-${i}" rows="4" placeholder="הזן תוכן כאן..."></textarea>
             </div>
         `;
+    }
+
+    // החלפת מצב תצוגה של ברכה (להראות בספר / לא להראות)
+    window.toggleGreetingVisibility = (index) => {
+        greetingsVisibility[index] = !greetingsVisibility[index];
+        updateToggleUI(index);
+    };
+
+    function updateToggleUI(index) {
+        const btn = document.getElementById(`toggle-btn-${index}`);
+        const box = document.getElementById(`greeting-box-${index}`);
+        if (greetingsVisibility[index]) {
+            btn.className = "toggle-visible";
+            btn.innerText = "👁️ להראות בספר (מוצג)";
+            box.classList.remove("dimmed");
+        } else {
+            btn.className = "toggle-hidden";
+            btn.innerText = "🚫 לא להראות בספר (מוסתר)";
+            box.classList.add("dimmed");
+        }
     }
 
     // פונקציות ניווט ויצירת כיתה
@@ -515,6 +586,23 @@
             loadClasses();
         } catch (e) {
             alert("שגיאה ביצירת כיתה. יש לוודא שהגדרות ה-Firebase תקינות.");
+            console.error(e);
+        }
+    };
+
+    // מחיקת כיתה עם אישור כפול
+    window.deleteCurrentClass = async () => {
+        if (!currentClassId) return;
+        const confirmed = confirm(`האם אתה בטוח שברצונך למחוק את "${currentClassData.name}"?\nפעולה זו תמחק את הכיתה לצמיתות.`);
+        if (!confirmed) return;
+
+        try {
+            if (unsubscribeStudents) unsubscribeStudents();
+            await deleteDoc(doc(db, "classes", currentClassId));
+            alert("הכיתה נמחקה בהצלחה.");
+            backToMain();
+        } catch (e) {
+            alert("שגיאה במחיקת הכיתה.");
             console.error(e);
         }
     };
@@ -608,7 +696,11 @@
             if (greetings[i]) {
                 document.getElementById(`greeting-title-${i}`).value = greetings[i].title;
                 document.getElementById(`greeting-text-${i}`).value = greetings[i].text;
+                greetingsVisibility[i] = (greetings[i].visible !== undefined) ? greetings[i].visible : true;
+            } else {
+                greetingsVisibility[i] = true;
             }
+            updateToggleUI(i);
         }
     };
 
@@ -617,15 +709,16 @@
         for (let i = 0; i <= 10; i++) {
             greetings.push({
                 title: document.getElementById(`greeting-title-${i}`).value,
-                text: document.getElementById(`greeting-text-${i}`).value
+                text: document.getElementById(`greeting-text-${i}`).value,
+                visible: greetingsVisibility[i]
             });
         }
         await updateDoc(doc(db, "classes", currentClassId), { greetings: greetings });
-        alert("דברי הפתיחה נשמרו בהצלחה.");
+        alert("דברי הפתיחה והגדרות התצוגה נשמרו בהצלחה.");
         backToClass();
     };
 
-    // יצירת הספר המלא מחולק לדפים
+    // יצירת הספר המלא מחולק לדפים (מציג רק קטעים שסומנו כ"להראות בספר")
     window.generateBook = async () => {
         document.getElementById('class-screen').classList.add('hidden');
         document.getElementById('book-view').classList.remove('hidden');
@@ -646,9 +739,10 @@
             </div>
         `;
 
-        // הוספת דבר המחנכת ושאר הברכות לפי הסדר
+        // הוספת דבר המחנכת ושאר הברכות לפי הסדר (רק אם visible הוא true ויש טקסט)
         greetings.forEach(g => {
-            if (g.text && g.text.trim() !== "") {
+            const isVisible = (g.visible !== undefined) ? g.visible : true;
+            if (isVisible && g.text && g.text.trim() !== "") {
                 html += `
                     <div class="book-page">
                         <h2>${g.title}</h2>
