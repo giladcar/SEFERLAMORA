@@ -120,14 +120,6 @@
             border-color: var(--danger);
         }
 
-        .btn-danger-solid {
-            background-color: var(--danger);
-            color: #ffffff;
-        }
-        .btn-danger-solid:hover {
-            background-color: var(--danger-hover);
-        }
-
         /* כפתורי מצב תצוגה בספר */
         .toggle-visible {
             background-color: #dcfce7;
@@ -252,6 +244,18 @@
             margin-bottom: 20px;
         }
 
+        .autosave-banner {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         /* עיצוב להדפסת הספר */
         .book-page {
             border: 1px solid #cbd5e1;
@@ -327,9 +331,9 @@
                 <button class="btn" onclick="showCreateClassStep1()">+ יצירת כיתה חדשה</button>
             </div>
 
-            <!-- שלב 1 יצירת כיתה: בחירת שכבה -->
+            <!-- שלב 1 יצירת כיתה: בחירת שכבה (חובה) -->
             <div id="create-class-step1" class="sub-box hidden">
-                <h3>שלב 1 מתוך 2: בחירת שכבת גיל</h3>
+                <h3>שלב 1 מתוך 2: בחירת שכבת גיל (חובה)</h3>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn btn-dark" onclick="selectGrade('כיתה א\'')">כיתה א'</button>
                     <button class="btn btn-dark" onclick="selectGrade('כיתה ב\'')">כיתה ב'</button>
@@ -337,12 +341,12 @@
                 </div>
             </div>
 
-            <!-- שלב 2 יצירת כיתה: בחירת שנה עברית -->
+            <!-- שלב 2 יצירת כיתה: בחירת שנה עברית (חובה) ושם כיתה (רשות) -->
             <div id="create-class-step2" class="sub-box hidden">
-                <h3>שלב 2 מתוך 2: בחירת שנת לימודים (<span id="selected-grade-display"></span>)</h3>
-                <div style="max-width: 300px;">
-                    <label for="hebrew-year-select">שנה עברית</label>
-                    <select id="hebrew-year-select">
+                <h3>שלב 2 מתוך 2: פרטי הכיתה (<span id="selected-grade-display"></span>)</h3>
+                <div style="max-width: 380px;">
+                    <label for="hebrew-year-select">שנה עברית (חובה) *</label>
+                    <select id="hebrew-year-select" required>
                         <option value="תשפ״ו">תשפ"ו</option>
                         <option value="תשפ״ז" selected>תשפ"ז</option>
                         <option value="תשפ״ח">תשפ"ח</option>
@@ -354,6 +358,9 @@
                         <option value="תשצ״ד">תשצ"ד</option>
                         <option value="תשצ״ה">תשצ"ה</option>
                     </select>
+
+                    <label for="custom-class-name">שם כיתה נוסף / כינוי (רשות - לא חובה)</label>
+                    <input type="text" id="custom-class-name" placeholder="לדוגמה: כיתת כלנית או א'2 (ניתן להשאיר ריק)">
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn btn-success" onclick="finishCreateClass()">אישור ויצירת כיתה</button>
@@ -409,7 +416,7 @@
         </div>
     </div>
 
-    <!-- מסך עריכת דבר המחנכת ו-10 דברים נוספים -->
+    <!-- מסך עריכת דבר המחנכת ו-10 דברים נוספים (שמירה אוטומטית) -->
     <div id="greetings-screen" class="hidden">
         <div style="margin-bottom: 16px;">
             <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לכיתה</button>
@@ -417,9 +424,9 @@
 
         <div class="panel">
             <h2>עריכת דברי פתיחה וברכות לספר</h2>
-            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
-                בכל קטע ניתן לבחור באמצעות הכפתור העליון האם להציג אותו בספר הסופי או להסתיר אותו.
-            </p>
+            <div id="greetings-autosave-status" class="autosave-banner">
+                כל השינויים נשמרים אוטומטית בענן בזמן ההקלדה ✓
+            </div>
             
             <div id="greeting-box-0" class="sub-box">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -427,17 +434,12 @@
                     <button type="button" id="toggle-btn-0" class="toggle-visible" onclick="toggleGreetingVisibility(0)">👁️ להראות בספר (מוצג)</button>
                 </div>
                 <label>כותרת הקטע</label>
-                <input type="text" id="greeting-title-0" value="דבר המחנכת">
+                <input type="text" id="greeting-title-0" value="דבר המחנכת" oninput="triggerGreetingsAutoSave()">
                 <label>תוכן הדברים</label>
-                <textarea id="greeting-text-0" rows="5" placeholder="הזן כאן את דבר המחנכת..."></textarea>
+                <textarea id="greeting-text-0" rows="5" placeholder="הזן כאן את דבר המחנכת..." oninput="triggerGreetingsAutoSave()"></textarea>
             </div>
 
             <div id="extra-greetings-container"></div>
-
-            <div style="margin-top: 20px;">
-                <button class="btn btn-success" onclick="saveGreetings()">שמירת שינויים</button>
-                <button class="btn btn-outline" onclick="backToClass()">ביטול</button>
-            </div>
         </div>
     </div>
 
@@ -484,6 +486,7 @@
     let currentClassId = "";
     let currentClassData = null;
     let unsubscribeStudents = null;
+    let greetingsSaveTimeout = null;
     
     // מערך לשמירת מצב התצוגה (true = להראות בספר, false = לא להראות)
     let greetingsVisibility = new Array(11).fill(true);
@@ -517,7 +520,7 @@
         document.getElementById('teacher-login-screen').classList.remove('hidden');
     };
 
-    // יצירת 10 תיבות נוספות לדבר היועצת, מנהל וכו' עם כפתור הצגה/הסתרה
+    // יצירת 10 תיבות נוספות לדבר היועצת, מנהל וכו' עם שמירה אוטומטית
     const extraContainer = document.getElementById('extra-greetings-container');
     const defaultTitles = ["דבר המנהל/ת", "דבר היועצת", "דבר הרכזת", "ברכה נוספת 4", "ברכה נוספת 5", "ברכה נוספת 6", "ברכה נוספת 7", "ברכה נוספת 8", "ברכה נוספת 9", "ברכה נוספת 10"];
     for (let i = 1; i <= 10; i++) {
@@ -528,17 +531,18 @@
                     <button type="button" id="toggle-btn-${i}" class="toggle-visible" onclick="toggleGreetingVisibility(${i})">👁️ להראות בספר (מוצג)</button>
                 </div>
                 <label>כותרת הקטע</label>
-                <input type="text" id="greeting-title-${i}" value="${defaultTitles[i-1]}">
+                <input type="text" id="greeting-title-${i}" value="${defaultTitles[i-1]}" oninput="triggerGreetingsAutoSave()">
                 <label>תוכן הדברים</label>
-                <textarea id="greeting-text-${i}" rows="4" placeholder="הזן תוכן כאן..."></textarea>
+                <textarea id="greeting-text-${i}" rows="4" placeholder="הזן תוכן כאן..." oninput="triggerGreetingsAutoSave()"></textarea>
             </div>
         `;
     }
 
-    // החלפת מצב תצוגה של ברכה (להראות בספר / לא להראות)
+    // החלפת מצב תצוגה של ברכה (להראות בספר / לא להראות) + שמירה אוטומטית
     window.toggleGreetingVisibility = (index) => {
         greetingsVisibility[index] = !greetingsVisibility[index];
         updateToggleUI(index);
+        triggerGreetingsAutoSave();
     };
 
     function updateToggleUI(index) {
@@ -562,24 +566,41 @@
     };
 
     window.selectGrade = (grade) => {
+        if (!grade) return;
         tempSelectedGrade = grade;
         document.getElementById('selected-grade-display').innerText = grade;
+        document.getElementById('custom-class-name').value = "";
         document.getElementById('create-class-step1').classList.add('hidden');
         document.getElementById('create-class-step2').classList.remove('hidden');
     };
 
     window.cancelCreateClass = () => {
+        tempSelectedGrade = "";
         document.getElementById('create-class-step1').classList.add('hidden');
         document.getElementById('create-class-step2').classList.add('hidden');
     };
 
     window.finishCreateClass = async () => {
         const year = document.getElementById('hebrew-year-select').value;
+        const customName = document.getElementById('custom-class-name').value.trim();
+
+        // אימות שדות חובה (שכבה ושנה)
+        if (!tempSelectedGrade || !year) {
+            alert("חובה לבחור שכבת גיל ושנה עברית.");
+            return;
+        }
+
+        // הרכבת שם הכיתה: אם הוזן שם מותאם אישית, נוסיף אותו בסוגריים
+        const fullClassName = customName 
+            ? `${tempSelectedGrade} - ${year} (${customName})` 
+            : `${tempSelectedGrade} - ${year}`;
+
         try {
             await addDoc(collection(db, "classes"), {
                 grade: tempSelectedGrade,
                 year: year,
-                name: `${tempSelectedGrade} - ${year}`,
+                customName: customName,
+                name: fullClassName,
                 greetings: []
             });
             cancelCreateClass();
@@ -590,19 +611,31 @@
         }
     };
 
-    // מחיקת כיתה עם אישור כפול
+    // מחיקת כיתה + מחיקת כל הפרופילים של התלמידים השייכים לה
     window.deleteCurrentClass = async () => {
         if (!currentClassId) return;
-        const confirmed = confirm(`האם אתה בטוח שברצונך למחוק את "${currentClassData.name}"?\nפעולה זו תמחק את הכיתה לצמיתות.`);
+        const confirmed = confirm(`האם אתה בטוח שברצונך למחוק את "${currentClassData.name}"?\nפעולה זו תמחק לצמיתות גם את הכיתה וגם את כל פרופילי התלמידים והסיפורים שבתוכה.`);
         if (!confirmed) return;
 
         try {
             if (unsubscribeStudents) unsubscribeStudents();
+
+            // 1. איתור ומחיקת כל התלמידים של הכיתה
+            const studentsQuery = query(collection(db, "students"), where("classId", "==", currentClassId));
+            const studentsSnapshot = await getDocs(studentsQuery);
+            const deletePromises = [];
+            studentsSnapshot.forEach((studentDoc) => {
+                deletePromises.push(deleteDoc(doc(db, "students", studentDoc.id)));
+            });
+            await Promise.all(deletePromises);
+
+            // 2. מחיקת הכיתה עצמה
             await deleteDoc(doc(db, "classes", currentClassId));
-            alert("הכיתה נמחקה בהצלחה.");
+
+            alert("הכיתה וכל פרופילי התלמידים שבתוכה נמחקו בהצלחה.");
             backToMain();
         } catch (e) {
-            alert("שגיאה במחיקת הכיתה.");
+            alert("שגיאה במחיקת הכיתה והפרופילים.");
             console.error(e);
         }
     };
@@ -684,7 +717,7 @@
         });
     };
 
-    // עריכת ברכות (דבר המחנכת + 10 נוספים)
+    // עריכת ברכות (דבר המחנכת + 10 נוספים) עם שמירה אוטומטית
     window.showGreetingsEditor = async () => {
         document.getElementById('class-screen').classList.add('hidden');
         document.getElementById('greetings-screen').classList.remove('hidden');
@@ -704,18 +737,37 @@
         }
     };
 
-    window.saveGreetings = async () => {
-        const greetings = [];
-        for (let i = 0; i <= 10; i++) {
-            greetings.push({
-                title: document.getElementById(`greeting-title-${i}`).value,
-                text: document.getElementById(`greeting-text-${i}`).value,
-                visible: greetingsVisibility[i]
-            });
-        }
-        await updateDoc(doc(db, "classes", currentClassId), { greetings: greetings });
-        alert("דברי הפתיחה והגדרות התצוגה נשמרו בהצלחה.");
-        backToClass();
+    window.triggerGreetingsAutoSave = () => {
+        const statusBanner = document.getElementById('greetings-autosave-status');
+        statusBanner.innerText = "שומר שינויים בענן...";
+        statusBanner.style.backgroundColor = "#fefce8";
+        statusBanner.style.borderColor = "#fef08a";
+        statusBanner.style.color = "#854d0e";
+
+        clearTimeout(greetingsSaveTimeout);
+        greetingsSaveTimeout = setTimeout(async () => {
+            const greetings = [];
+            for (let i = 0; i <= 10; i++) {
+                greetings.push({
+                    title: document.getElementById(`greeting-title-${i}`).value,
+                    text: document.getElementById(`greeting-text-${i}`).value,
+                    visible: greetingsVisibility[i]
+                });
+            }
+            try {
+                await updateDoc(doc(db, "classes", currentClassId), { greetings: greetings });
+                statusBanner.innerText = "כל השינויים נשמרו אוטומטית בענן ✓";
+                statusBanner.style.backgroundColor = "#f0fdf4";
+                statusBanner.style.borderColor = "#bbf7d0";
+                statusBanner.style.color = "#166534";
+            } catch (e) {
+                statusBanner.innerText = "שגיאה בשמירה האוטומטית. בדוק חיבור אינטרנט.";
+                statusBanner.style.backgroundColor = "#fef2f2";
+                statusBanner.style.borderColor = "#fecaca";
+                statusBanner.style.color = "#991b1b";
+                console.error(e);
+            }
+        }, 500);
     };
 
     // יצירת הספר המלא מחולק לדפים (מציג רק קטעים שסומנו כ"להראות בספר")
@@ -771,7 +823,7 @@
         container.innerHTML = html;
     };
 
-    // כפתורי חזרהdfgu
+    // כפתורי חזרה
     window.backToMain = () => {
         if (unsubscribeStudents) unsubscribeStudents();
         document.getElementById('class-screen').classList.add('hidden');
