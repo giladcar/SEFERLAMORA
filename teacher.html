@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פורטל ניהול למורה | ספר הסיפורים הכיתתי</title>
+    <style>
+        :root {
+            --primary: #1e293b;
+            --primary-hover: #0f172a;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --danger: #dc2626;
+            --danger-hover: #b91c1c;
+            --success: #16a34a;
+            --success-hover: #15803d;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* סרגל עליון נקי */
+        .topbar {
+            background-color: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+        .topbar-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 28px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+        }
+
+        h1, h2, h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 22px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        h3 {
+            font-size: 17px;
+            margin-bottom: 12px;
+        }
+
+        /* כפתורים מקצועיים */
+        .btn {
+            background-color: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn:hover { background-color: var(--accent-hover); }
+        
+        .btn-dark { background-color: var(--primary); }
+        .btn-dark:hover { background-color: var(--primary-hover); }
+        
+        .btn-success { background-color: var(--success); }
+        .btn-success:hover { background-color: var(--success-hover); }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover { background-color: #f1f5f9; }
+
+        .btn-danger {
+            background-color: transparent;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+        }
+        .btn-danger:hover {
+            background-color: #fef2f2;
+            border-color: var(--danger);
+        }
+
+        /* שדות קלט */
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            margin-bottom: 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #ffffff;
+            transition: border-color 0.15s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .hidden { display: none !important; }
+
+        /* כרטיסי כניסה */
+        .login-wrapper {
+            max-width: 420px;
+            margin: 60px auto;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        /* רשתות וכרטיסיות נתונים */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .item-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px;
+            cursor: pointer;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .item-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.08);
+        }
+        .item-card-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .item-card-meta {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .sub-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .code-badge {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+            letter-spacing: 2px;
+            font-family: monospace;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        /* עיצוב להדפסת הספר */
+        .book-page {
+            border: 1px solid #cbd5e1;
+            padding: 48px;
+            margin-bottom: 32px;
+            background: #ffffff;
+            min-height: 550px;
+            page-break-after: always;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .book-page h2 {
+            font-size: 26px;
+            border-bottom: 2px solid #1e293b;
+            padding-bottom: 12px;
+            text-align: right;
+        }
+        .book-page p {
+            font-size: 19px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        .author-tag {
+            font-size: 15px;
+            color: var(--text-muted);
+            font-weight: bold;
+            margin-bottom: 24px;
+        }
+
+        @media print {
+            body { background: #fff; }
+            body * { visibility: hidden; }
+            #book-view, #book-view * { visibility: visible; }
+            #book-view { position: absolute; left: 0; top: 0; width: 100%; }
+            .book-page { border: none; box-shadow: none; padding: 20px; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="topbar no-print">
+    <div class="topbar-title">מערכת ניהול ספר סיפורים כיתתי | פורטל מורה</div>
+    <button id="logout-btn" class="btn btn-danger hidden" onclick="teacherLogout()">יציאה מהמערכת</button>
+</div>
+
+<div class="container">
+
+    <!-- מסך אבטחה: כניסת מורה -->
+    <div id="teacher-login-screen" class="login-wrapper">
+        <h2 style="text-align: center; border: none; margin-bottom: 8px;">כניסה לאזור ניהול</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">
+            הזן סיסמת מורה (10 תווים)
+        </p>
+        
+        <label for="teacher-password-input">סיסמת גישה</label>
+        <input type="password" id="teacher-password-input" maxlength="10" placeholder="••••••••••" style="text-align: center; font-size: 18px; letter-spacing: 3px;">
+        
+        <button class="btn btn-dark" style="width: 100%; justify-content: center; padding: 12px;" onclick="verifyTeacherPassword()">התחברות למערכת</button>
+        
+        <p id="login-error-msg" style="color: var(--danger); font-size: 14px; text-align: center; margin-top: 12px; display: none;">
+            הסיסמה שהוזנה שגויה. נסה שוב.
+        </p>
+    </div>
+
+    <!-- מסך ראשי: רשימת כיתות ויצירת כיתה -->
+    <div id="main-screen" class="hidden">
+        <div class="panel">
+            <div class="header-actions">
+                <h2 style="border: none; margin: 0;">הכיתות שלי</h2>
+                <button class="btn" onclick="showCreateClassStep1()">+ יצירת כיתה חדשה</button>
+            </div>
+
+            <!-- שלב 1 יצירת כיתה: בחירת שכבה -->
+            <div id="create-class-step1" class="sub-box hidden">
+                <h3>שלב 1 מתוך 2: בחירת שכבת גיל</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-dark" onclick="selectGrade('כיתה א\'')">כיתה א'</button>
+                    <button class="btn btn-dark" onclick="selectGrade('כיתה ב\'')">כיתה ב'</button>
+                    <button class="btn btn-outline" onclick="cancelCreateClass()">ביטול</button>
+                </div>
+            </div>
+
+            <!-- שלב 2 יצירת כיתה: בחירת שנה עברית -->
+            <div id="create-class-step2" class="sub-box hidden">
+                <h3>שלב 2 מתוך 2: בחירת שנת לימודים (<span id="selected-grade-display"></span>)</h3>
+                <div style="max-width: 300px;">
+                    <label for="hebrew-year-select">שנה עברית</label>
+                    <select id="hebrew-year-select">
+                        <option value="תשפ״ו">תשפ"ו</option>
+                        <option value="תשפ״ז" selected>תשפ"ז</option>
+                        <option value="תשפ״ח">תשפ"ח</option>
+                        <option value="תשפ״ט">תשפ"ט</option>
+                        <option value="תש״ץ">תש"ץ</option>
+                        <option value="תשצ״א">תשצ"א</option>
+                        <option value="תשצ״ב">תשצ"ב</option>
+                        <option value="תשצ״ג">תשצ"ג</option>
+                        <option value="תשצ״ד">תשצ"ד</option>
+                        <option value="תשצ״ה">תשצ"ה</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" onclick="finishCreateClass()">אישור ויצירת כיתה</button>
+                    <button class="btn btn-outline" onclick="cancelCreateClass()">ביטול</button>
+                </div>
+            </div>
+
+            <div id="classes-list" class="grid">
+                <p style="color: var(--text-muted);">טוען נתונים...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- מסך ניהול כיתה ספציפית -->
+    <div id="class-screen" class="hidden">
+        <div style="margin-bottom: 16px;">
+            <button class="btn btn-outline" onclick="backToMain()">&rarr; חזרה לרשימת הכיתות</button>
+        </div>
+
+        <div class="panel">
+            <div class="header-actions">
+                <h2 id="class-title" style="border: none; margin: 0;"></h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-outline" onclick="showGreetingsEditor()">עריכת דברי פתיחה וברכות</button>
+                    <button class="btn btn-success" onclick="generateBook()">הפקת הספר המלא</button>
+                </div>
+            </div>
+
+            <h3>תלמידים רשומים בכיתה</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: -8px;">לחץ על כרטיס תלמיד לצפייה בסיפורים ובקוד הגישה האישי שלו.</p>
+            <div id="students-list" class="grid"></div>
+        </div>
+    </div>
+
+    <!-- מסך פרופיל תלמיד עבור המורה -->
+    <div id="student-detail-screen" class="hidden">
+        <div style="margin-bottom: 16px;">
+            <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לכיתה</button>
+        </div>
+
+        <div class="panel">
+            <div class="header-actions">
+                <h2 id="student-detail-name" style="border: none; margin: 0;"></h2>
+                <div>
+                    <span style="font-size: 14px; color: var(--text-muted); margin-left: 8px;">קוד גישה אישי:</span>
+                    <span id="student-detail-code" class="code-badge"></span>
+                </div>
+            </div>
+
+            <h3>סיפורי התלמיד</h3>
+            <div id="student-stories-list"></div>
+        </div>
+    </div>
+
+    <!-- מסך עריכת דבר המחנכת ו-10 דברים נוספים -->
+    <div id="greetings-screen" class="hidden">
+        <div style="margin-bottom: 16px;">
+            <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לכיתה</button>
+        </div>
+
+        <div class="panel">
+            <h2>עריכת דברי פתיחה וברכות לספר</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;">
+                קטעים שיישארו ריקים לא ייכללו בהדפסת הספר הסופי.
+            </p>
+            
+            <div class="sub-box">
+                <h3>1. דבר המחנכת (עמוד פתיחה ראשי)</h3>
+                <label>כותרת הקטע</label>
+                <input type="text" id="greeting-title-0" value="דבר המחנכת">
+                <label>תוכן הדברים</label>
+                <textarea id="greeting-text-0" rows="5" placeholder="הזן כאן את דבר המחנכת..."></textarea>
+            </div>
+
+            <div id="extra-greetings-container"></div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn btn-success" onclick="saveGreetings()">שמירת שינויים</button>
+                <button class="btn btn-outline" onclick="backToClass()">ביטול</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- מסך תצוגת הספר המחולק לדפים -->
+    <div id="book-view" class="hidden">
+        <div class="panel no-print" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לניהול הכיתה</button>
+            <div>
+                <button class="btn btn-dark" onclick="window.print()">הדפסה / שמירה כקובץ PDF</button>
+            </div>
+        </div>
+        <div id="book-pages-container"></div>
+    </div>
+
+</div>
+
+<!-- חיבור ל-Firebase -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // =========================================================================
+    // הגדרת סיסמת המורה
+    // =========================================================================
+    const TEACHER_SECRET_PASSWORD = "mora#20#26"; 
+
+    // =========================================================================
+    // הגדרות Firebase האמיתיות שלך
+    // =========================================================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyB2yx6GiaeWX5nYQhdh8c3-2k2XvblRRN0",
+        authDomain: "siporim-64515.firebaseapp.com",
+        projectId: "siporim-64515",
+        storageBucket: "siporim-64515.firebasestorage.app",
+        messagingSenderId: "701042104939",
+        appId: "1:701042104939:web:31df33c0b18beec2b26f2e",
+        measurementId: "G-D0TQ44WC9B"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let tempSelectedGrade = "";
+    let currentClassId = "";
+    let currentClassData = null;
+    let unsubscribeStudents = null;
+
+    // אימות סיסמת המורה
+    window.verifyTeacherPassword = () => {
+        const input = document.getElementById('teacher-password-input').value;
+        const errorMsg = document.getElementById('login-error-msg');
+        
+        if (input === TEACHER_SECRET_PASSWORD) {
+            errorMsg.style.display = 'none';
+            document.getElementById('teacher-login-screen').classList.add('hidden');
+            document.getElementById('main-screen').classList.remove('hidden');
+            document.getElementById('logout-btn').classList.remove('hidden');
+            loadClasses();
+        } else {
+            errorMsg.style.display = 'block';
+        }
+    };
+
+    // יציאה ונעילת אזור המורה
+    window.teacherLogout = () => {
+        if (unsubscribeStudents) unsubscribeStudents();
+        document.getElementById('teacher-password-input').value = "";
+        document.getElementById('main-screen').classList.add('hidden');
+        document.getElementById('class-screen').classList.add('hidden');
+        document.getElementById('student-detail-screen').classList.add('hidden');
+        document.getElementById('greetings-screen').classList.add('hidden');
+        document.getElementById('book-view').classList.add('hidden');
+        document.getElementById('logout-btn').classList.add('hidden');
+        document.getElementById('teacher-login-screen').classList.remove('hidden');
+    };
+
+    // יצירת 10 תיבות נוספות לדבר היועצת, מנהל וכו'
+    const extraContainer = document.getElementById('extra-greetings-container');
+    const defaultTitles = ["דבר המנהל/ת", "דבר היועצת", "דבר הרכזת", "ברכה נוספת 4", "ברכה נוספת 5", "ברכה נוספת 6", "ברכה נוספת 7", "ברכה נוספת 8", "ברכה נוספת 9", "ברכה נוספת 10"];
+    for (let i = 1; i <= 10; i++) {
+        extraContainer.innerHTML += `
+            <div class="sub-box">
+                <h3>${i + 1}. קטע פתיחה נוסף</h3>
+                <label>כותרת הקטע</label>
+                <input type="text" id="greeting-title-${i}" value="${defaultTitles[i-1]}">
+                <label>תוכן הדברים</label>
+                <textarea id="greeting-text-${i}" rows="4" placeholder="הזן תוכן כאן..."></textarea>
+            </div>
+        `;
+    }
+
+    // פונקציות ניווט ויצירת כיתה
+    window.showCreateClassStep1 = () => {
+        document.getElementById('create-class-step1').classList.remove('hidden');
+        document.getElementById('create-class-step2').classList.add('hidden');
+    };
+
+    window.selectGrade = (grade) => {
+        tempSelectedGrade = grade;
+        document.getElementById('selected-grade-display').innerText = grade;
+        document.getElementById('create-class-step1').classList.add('hidden');
+        document.getElementById('create-class-step2').classList.remove('hidden');
+    };
+
+    window.cancelCreateClass = () => {
+        document.getElementById('create-class-step1').classList.add('hidden');
+        document.getElementById('create-class-step2').classList.add('hidden');
+    };
+
+    window.finishCreateClass = async () => {
+        const year = document.getElementById('hebrew-year-select').value;
+        try {
+            await addDoc(collection(db, "classes"), {
+                grade: tempSelectedGrade,
+                year: year,
+                name: `${tempSelectedGrade} - ${year}`,
+                greetings: []
+            });
+            cancelCreateClass();
+            loadClasses();
+        } catch (e) {
+            alert("שגיאה ביצירת כיתה. יש לוודא שהגדרות ה-Firebase תקינות.");
+            console.error(e);
+        }
+    };
+
+    // טעינת רשימת הכיתות
+    async function loadClasses() {
+        const listDiv = document.getElementById('classes-list');
+        listDiv.innerHTML = "";
+        const querySnapshot = await getDocs(collection(db, "classes"));
+        if (querySnapshot.empty) {
+            listDiv.innerHTML = "<p style='color: var(--text-muted);'>לא נמצאו כיתות במערכת. לחץ על 'יצירת כיתה חדשה' כדי להתחיל.</p>";
+            return;
+        }
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            const card = document.createElement('div');
+            card.className = 'item-card';
+            card.innerHTML = `
+                <div class="item-card-title">${data.name}</div>
+                <div class="item-card-meta">לחץ לניהול הכיתה וצפייה בתלמידים</div>
+            `;
+            card.onclick = () => openClass(docSnap.id, data);
+            listDiv.appendChild(card);
+        });
+    }
+
+    // כניסה לכיתה ספציפית והאזנה לתלמידים בזמן אמת
+    window.openClass = (classId, classData) => {
+        currentClassId = classId;
+        currentClassData = classData;
+        document.getElementById('main-screen').classList.add('hidden');
+        document.getElementById('class-screen').classList.remove('hidden');
+        document.getElementById('class-title').innerText = classData.name;
+
+        if (unsubscribeStudents) unsubscribeStudents();
+        const q = query(collection(db, "students"), where("classId", "==", classId));
+        unsubscribeStudents = onSnapshot(q, (snapshot) => {
+            const studentsDiv = document.getElementById('students-list');
+            studentsDiv.innerHTML = "";
+            if (snapshot.empty) {
+                studentsDiv.innerHTML = "<p style='color: var(--text-muted);'>טרם נרשמו תלמידים לכיתה זו.</p>";
+                return;
+            }
+            snapshot.forEach((docSnap) => {
+                const st = docSnap.data();
+                const card = document.createElement('div');
+                card.className = 'item-card';
+                const storiesCount = st.stories ? st.stories.length : 0;
+                card.innerHTML = `
+                    <div class="item-card-title">${st.firstName} ${st.lastName}</div>
+                    <div class="item-card-meta">סיפורים: ${storiesCount} מתוך 5</div>
+                `;
+                card.onclick = () => openStudentDetail(st);
+                studentsDiv.appendChild(card);
+            });
+        });
+    };
+
+    // צפייה בפרטי תלמיד (סיפורים + קוד)
+    window.openStudentDetail = (student) => {
+        document.getElementById('class-screen').classList.add('hidden');
+        document.getElementById('student-detail-screen').classList.remove('hidden');
+        document.getElementById('student-detail-name').innerText = `${student.firstName} ${student.lastName}`;
+        document.getElementById('student-detail-code').innerText = student.code;
+
+        const storiesDiv = document.getElementById('student-stories-list');
+        storiesDiv.innerHTML = "";
+        if (!student.stories || student.stories.length === 0) {
+            storiesDiv.innerHTML = "<p style='color: var(--text-muted);'>התלמיד טרם הזין סיפורים.</p>";
+            return;
+        }
+        student.stories.forEach((story, index) => {
+            storiesDiv.innerHTML += `
+                <div class="sub-box">
+                    <h3 style="margin-bottom: 8px;">${index + 1}. ${story.title || "ללא כותרת"}</h3>
+                    <p style="white-space: pre-wrap; margin: 0; color: var(--text-main);">${story.content || ""}</p>
+                </div>
+            `;
+        });
+    };
+
+    // עריכת ברכות (דבר המחנכת + 10 נוספים)
+    window.showGreetingsEditor = async () => {
+        document.getElementById('class-screen').classList.add('hidden');
+        document.getElementById('greetings-screen').classList.remove('hidden');
+
+        const docSnap = await getDoc(doc(db, "classes", currentClassId));
+        const greetings = docSnap.data().greetings || [];
+        
+        for (let i = 0; i <= 10; i++) {
+            if (greetings[i]) {
+                document.getElementById(`greeting-title-${i}`).value = greetings[i].title;
+                document.getElementById(`greeting-text-${i}`).value = greetings[i].text;
+            }
+        }
+    };
+
+    window.saveGreetings = async () => {
+        const greetings = [];
+        for (let i = 0; i <= 10; i++) {
+            greetings.push({
+                title: document.getElementById(`greeting-title-${i}`).value,
+                text: document.getElementById(`greeting-text-${i}`).value
+            });
+        }
+        await updateDoc(doc(db, "classes", currentClassId), { greetings: greetings });
+        alert("דברי הפתיחה נשמרו בהצלחה.");
+        backToClass();
+    };
+
+    // יצירת הספר המלא מחולק לדפים
+    window.generateBook = async () => {
+        document.getElementById('class-screen').classList.add('hidden');
+        document.getElementById('book-view').classList.remove('hidden');
+        const container = document.getElementById('book-pages-container');
+        container.innerHTML = "<p>מפיק את עמודי הספר...</p>";
+
+        const classSnap = await getDoc(doc(db, "classes", currentClassId));
+        const classInfo = classSnap.data();
+        const greetings = classInfo.greetings || [];
+
+        const q = query(collection(db, "students"), where("classId", "==", currentClassId));
+        const studentsSnap = await getDocs(q);
+
+        let html = `
+            <div class="book-page" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                <h1 style="font-size: 38px; margin-bottom: 12px;">ספר הסיפורים הכיתתי</h1>
+                <div style="font-size: 22px; color: var(--text-muted);">${classInfo.name}</div>
+            </div>
+        `;
+
+        // הוספת דבר המחנכת ושאר הברכות לפי הסדר
+        greetings.forEach(g => {
+            if (g.text && g.text.trim() !== "") {
+                html += `
+                    <div class="book-page">
+                        <h2>${g.title}</h2>
+                        <p>${g.text}</p>
+                    </div>
+                `;
+            }
+        });
+
+        // הוספת סיפורי התלמידים - כל סיפור בדף נפרד
+        studentsSnap.forEach(docSnap => {
+            const st = docSnap.data();
+            if (st.stories && st.stories.length > 0) {
+                st.stories.forEach(story => {
+                    html += `
+                        <div class="book-page">
+                            <h2>${story.title || "סיפור ללא כותרת"}</h2>
+                            <div class="author-tag">מאת: ${st.firstName} ${st.lastName}</div>
+                            <p>${story.content || ""}</p>
+                        </div>
+                    `;
+                });
+            }
+        });
+
+        container.innerHTML = html;
+    };
+
+    // כפתורי חזרה
+    window.backToMain = () => {
+        if (unsubscribeStudents) unsubscribeStudents();
+        document.getElementById('class-screen').classList.add('hidden');
+        document.getElementById('main-screen').classList.remove('hidden');
+        loadClasses();
+    };
+
+    window.backToClass = () => {
+        document.getElementById('student-detail-screen').classList.add('hidden');
+        document.getElementById('greetings-screen').classList.add('hidden');
+        document.getElementById('book-view').classList.add('hidden');
+        document.getElementById('class-screen').classList.remove('hidden');
+    };
+</script>
+
+</body>
+</html>
