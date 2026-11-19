@@ -256,16 +256,86 @@
             text-align: center;
         }
 
-        /* עיצוב להדפסת הספר */
+        /* תצוגה מקדימה של תמונת תלמיד בפרופיל */
+        .student-photo-preview {
+            width: 110px;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            background: #f1f5f9;
+        }
+
+        /* עיצוב דפי הספר והכריכות */
         .book-page {
             border: 1px solid #cbd5e1;
             padding: 48px;
             margin-bottom: 32px;
             background: #ffffff;
-            min-height: 550px;
+            min-height: 750px;
             page-break-after: always;
             box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            box-sizing: border-box;
+            position: relative;
         }
+        
+        /* עיצוב דף כריכה מלא */
+        .cover-page {
+            padding: 0 !important;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .cover-page img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        /* טקסט הכיתה שמופיע משמאל ל"על ידי כיתה" על הכריכה הקדמית */
+        .cover-class-overlay {
+            position: absolute;
+            top: 47.2%;
+            right: 43%;
+            font-size: 32px;
+            font-weight: bold;
+            color: #3e1f14;
+            font-family: Arial, Helvetica, sans-serif;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+        }
+
+        /* עיצוב כותרת ותמונה בדף סיפור של תלמיד */
+        .story-page-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            border-bottom: 2px solid #1e293b;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
+        }
+        .story-page-photo {
+            width: 115px;
+            height: 115px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            flex-shrink: 0;
+        }
+        .story-page-title-block h2 {
+            font-size: 28px;
+            border: none;
+            padding: 0;
+            margin: 0 0 6px 0;
+            text-align: right;
+        }
+        .author-tag {
+            font-size: 16px;
+            color: var(--text-muted);
+            font-weight: bold;
+            margin: 0;
+        }
+
         .book-page h2 {
             font-size: 26px;
             border-bottom: 2px solid #1e293b;
@@ -277,19 +347,14 @@
             line-height: 1.8;
             white-space: pre-wrap;
         }
-        .author-tag {
-            font-size: 15px;
-            color: var(--text-muted);
-            font-weight: bold;
-            margin-bottom: 24px;
-        }
 
         @media print {
             body { background: #fff; }
             body * { visibility: hidden; }
             #book-view, #book-view * { visibility: visible; }
             #book-view { position: absolute; left: 0; top: 0; width: 100%; }
-            .book-page { border: none; box-shadow: none; padding: 20px; }
+            .book-page { border: none; box-shadow: none; padding: 20px; height: 100vh; }
+            .cover-page { padding: 0 !important; }
             .no-print { display: none !important; }
         }
     </style>
@@ -341,10 +406,26 @@
                 </div>
             </div>
 
-            <!-- שלב 2 יצירת כיתה: בחירת שנה עברית (חובה) ושם כיתה (רשות) -->
+            <!-- שלב 2 יצירת כיתה: בחירת שנה עברית ומספר כיתה 0-10 (שניהם חובה) -->
             <div id="create-class-step2" class="sub-box hidden">
                 <h3>שלב 2 מתוך 2: פרטי הכיתה (<span id="selected-grade-display"></span>)</h3>
                 <div style="max-width: 380px;">
+                    <label for="class-number-select">מספר כיתה (0–10) (חובה) *</label>
+                    <select id="class-number-select" required>
+                        <option value="">-- בחר מספר כיתה --</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+
                     <label for="hebrew-year-select">שנה עברית (חובה) *</label>
                     <select id="hebrew-year-select" required>
                         <option value="תשפ״ו">תשפ"ו</option>
@@ -358,9 +439,6 @@
                         <option value="תשצ״ד">תשצ"ד</option>
                         <option value="תשצ״ה">תשצ"ה</option>
                     </select>
-
-                    <label for="custom-class-name">שם כיתה נוסף / כינוי (רשות - לא חובה)</label>
-                    <input type="text" id="custom-class-name" placeholder="לדוגמה: כיתת כלנית או א'2 (ניתן להשאיר ריק)">
                 </div>
                 <div style="display: flex; gap: 10px;">
                     <button class="btn btn-success" onclick="finishCreateClass()">אישור ויצירת כיתה</button>
@@ -391,12 +469,12 @@
             </div>
 
             <h3>תלמידים רשומים בכיתה</h3>
-            <p style="font-size: 14px; color: var(--text-muted); margin-top: -8px;">לחץ על כרטיס תלמיד לצפייה בסיפורים ובקוד הגישה האישי שלו.</p>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: -8px;">לחץ על כרטיס תלמיד לצפייה בסיפורים, העלאת תמונת תלמיד וצפייה בקוד הגישה.</p>
             <div id="students-list" class="grid"></div>
         </div>
     </div>
 
-    <!-- מסך פרופיל תלמיד עבור המורה -->
+    <!-- מסך פרופיל תלמיד עבור המורה + העלאת תמונה -->
     <div id="student-detail-screen" class="hidden">
         <div style="margin-bottom: 16px;">
             <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לכיתה</button>
@@ -408,6 +486,19 @@
                 <div>
                     <span style="font-size: 14px; color: var(--text-muted); margin-left: 8px;">קוד גישה אישי:</span>
                     <span id="student-detail-code" class="code-badge"></span>
+                </div>
+            </div>
+
+            <!-- אזור העלאת תמונה של הילד לספר -->
+            <div class="sub-box" style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <img id="student-photo-preview" class="student-photo-preview" src="" alt="תמונת תלמיד" style="display: none;">
+                <div id="student-no-photo-box" style="width: 110px; height: 110px; border-radius: 8px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; text-align: center;">
+                    אין תמונה
+                </div>
+                <div style="flex: 1; min-width: 220px;">
+                    <label for="student-photo-upload">תמונת התלמיד לספר (תוצג מימין לכותרת הסיפור)</label>
+                    <input type="file" id="student-photo-upload" accept="image/*" onchange="handleStudentPhotoUpload(event)" style="margin-bottom: 8px;">
+                    <div id="photo-upload-status" style="font-size: 13px; color: var(--success); font-weight: bold;"></div>
                 </div>
             </div>
 
@@ -485,10 +576,10 @@
     let tempSelectedGrade = "";
     let currentClassId = "";
     let currentClassData = null;
+    let currentEditingStudentId = "";
     let unsubscribeStudents = null;
     let greetingsSaveTimeout = null;
     
-    // מערך לשמירת מצב התצוגה (true = להראות בספר, false = לא להראות)
     let greetingsVisibility = new Array(11).fill(true);
 
     // אימות סיסמת המורה
@@ -538,7 +629,7 @@
         `;
     }
 
-    // החלפת מצב תצוגה של ברכה (להראות בספר / לא להראות) + שמירה אוטומטית
+    // החלפת מצב תצוגה של ברכה + שמירה אוטומטית
     window.toggleGreetingVisibility = (index) => {
         greetingsVisibility[index] = !greetingsVisibility[index];
         updateToggleUI(index);
@@ -569,7 +660,7 @@
         if (!grade) return;
         tempSelectedGrade = grade;
         document.getElementById('selected-grade-display').innerText = grade;
-        document.getElementById('custom-class-name').value = "";
+        document.getElementById('class-number-select').value = "";
         document.getElementById('create-class-step1').classList.add('hidden');
         document.getElementById('create-class-step2').classList.remove('hidden');
     };
@@ -581,25 +672,25 @@
     };
 
     window.finishCreateClass = async () => {
+        const classNumber = document.getElementById('class-number-select').value;
         const year = document.getElementById('hebrew-year-select').value;
-        const customName = document.getElementById('custom-class-name').value.trim();
 
-        // אימות שדות חובה (שכבה ושנה)
-        if (!tempSelectedGrade || !year) {
-            alert("חובה לבחור שכבת גיל ושנה עברית.");
+        // אימות שכל השדות חובה: שכבה, מספר כיתה (0-10), ושנה עברית
+        if (!tempSelectedGrade || classNumber === "" || !year) {
+            alert("כל השדות הם חובה! יש לבחור שכבה, מספר כיתה (0-10) ושנה עברית.");
             return;
         }
 
-        // הרכבת שם הכיתה: אם הוזן שם מותאם אישית, נוסיף אותו בסוגריים
-        const fullClassName = customName 
-            ? `${tempSelectedGrade} - ${year} (${customName})` 
-            : `${tempSelectedGrade} - ${year}`;
+        // שם הכיתה המלא: למשל "כיתה א' 2 - תשפ"ז"
+        const shortGradeAndNum = `${tempSelectedGrade.replace('כיתה ', '')} ${classNumber}`;
+        const fullClassName = `${tempSelectedGrade} ${classNumber} - ${year}`;
 
         try {
             await addDoc(collection(db, "classes"), {
                 grade: tempSelectedGrade,
+                classNumber: classNumber,
+                shortLabel: shortGradeAndNum,
                 year: year,
-                customName: customName,
                 name: fullClassName,
                 greetings: []
             });
@@ -620,7 +711,6 @@
         try {
             if (unsubscribeStudents) unsubscribeStudents();
 
-            // 1. איתור ומחיקת כל התלמידים של הכיתה
             const studentsQuery = query(collection(db, "students"), where("classId", "==", currentClassId));
             const studentsSnapshot = await getDocs(studentsQuery);
             const deletePromises = [];
@@ -629,7 +719,6 @@
             });
             await Promise.all(deletePromises);
 
-            // 2. מחיקת הכיתה עצמה
             await deleteDoc(doc(db, "classes", currentClassId));
 
             alert("הכיתה וכל פרופילי התלמידים שבתוכה נמחקו בהצלחה.");
@@ -684,22 +773,38 @@
                 const card = document.createElement('div');
                 card.className = 'item-card';
                 const storiesCount = st.stories ? st.stories.length : 0;
+                const hasPhotoText = st.photo ? " | 📷 יש תמונה" : "";
                 card.innerHTML = `
                     <div class="item-card-title">${st.firstName} ${st.lastName}</div>
-                    <div class="item-card-meta">סיפורים: ${storiesCount} מתוך 5</div>
+                    <div class="item-card-meta">סיפורים: ${storiesCount} מתוך 5${hasPhotoText}</div>
                 `;
-                card.onclick = () => openStudentDetail(st);
+                card.onclick = () => openStudentDetail(docSnap.id, st);
                 studentsDiv.appendChild(card);
             });
         });
     };
 
-    // צפייה בפרטי תלמיד (סיפורים + קוד)
-    window.openStudentDetail = (student) => {
+    // צפייה בפרטי תלמיד (סיפורים + קוד + העלאת תמונה)
+    window.openStudentDetail = (studentId, student) => {
+        currentEditingStudentId = studentId;
         document.getElementById('class-screen').classList.add('hidden');
         document.getElementById('student-detail-screen').classList.remove('hidden');
         document.getElementById('student-detail-name').innerText = `${student.firstName} ${student.lastName}`;
         document.getElementById('student-detail-code').innerText = student.code;
+        document.getElementById('student-photo-upload').value = "";
+        document.getElementById('photo-upload-status').innerText = "";
+
+        const previewImg = document.getElementById('student-photo-preview');
+        const noPhotoBox = document.getElementById('student-no-photo-box');
+
+        if (student.photo) {
+            previewImg.src = student.photo;
+            previewImg.style.display = "block";
+            noPhotoBox.style.display = "none";
+        } else {
+            previewImg.style.display = "none";
+            noPhotoBox.style.display = "flex";
+        }
 
         const storiesDiv = document.getElementById('student-stories-list');
         storiesDiv.innerHTML = "";
@@ -715,6 +820,67 @@
                 </div>
             `;
         });
+    };
+
+    // העלאת תמונת תלמיד, הקטנה אוטומטית ושמירה בענן
+    window.handleStudentPhotoUpload = (event) => {
+        const file = event.target.files[0];
+        if (!file || !currentEditingStudentId) return;
+
+        const statusDiv = document.getElementById('photo-upload-status');
+        statusDiv.style.color = "#854d0e";
+        statusDiv.innerText = "מעבד ושומר תמונה בענן...";
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = async function() {
+                // הקטנת התמונה לרוחב/גובה מקסימלי של 300 פיקסלים כדי שתישמר מהר ב-Firestore
+                const canvas = document.createElement('canvas');
+                const maxSize = 300;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+
+                try {
+                    await updateDoc(doc(db, "students", currentEditingStudentId), {
+                        photo: compressedDataUrl
+                    });
+
+                    const previewImg = document.getElementById('student-photo-preview');
+                    const noPhotoBox = document.getElementById('student-no-photo-box');
+                    previewImg.src = compressedDataUrl;
+                    previewImg.style.display = "block";
+                    noPhotoBox.style.display = "none";
+
+                    statusDiv.style.color = "#16a34a";
+                    statusDiv.innerText = "התמונה נשמרה בהצלחה ותופיע בספר ✓";
+                } catch (err) {
+                    statusDiv.style.color = "#dc2626";
+                    statusDiv.innerText = "שגיאה בשמירת התמונה.";
+                    console.error(err);
+                }
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
     };
 
     // עריכת ברכות (דבר המחנכת + 10 נוספים) עם שמירה אוטומטית
@@ -770,7 +936,7 @@
         }, 500);
     };
 
-    // יצירת הספר המלא מחולק לדפים (מציג רק קטעים שסומנו כ"להראות בספר")
+    // יצירת הספר המלא: כריכה קדמית -> ברכות -> סיפורים (עם תמונה מימין) -> כריכה אחורית
     window.generateBook = async () => {
         document.getElementById('class-screen').classList.add('hidden');
         document.getElementById('book-view').classList.remove('hidden');
@@ -784,14 +950,18 @@
         const q = query(collection(db, "students"), where("classId", "==", currentClassId));
         const studentsSnap = await getDocs(q);
 
+        // טקסט הכיתה שמופיע משמאל ל"על ידי כיתה" בכריכה הקדמית
+        const coverLabel = classInfo.shortLabel || `${classInfo.grade.replace('כיתה ', '')} ${classInfo.classNumber || ''}`;
+
+        // 1. כריכה קדמית (front.jpg)
         let html = `
-            <div class="book-page" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
-                <h1 style="font-size: 38px; margin-bottom: 12px;">ספר הסיפורים הכיתתי</h1>
-                <div style="font-size: 22px; color: var(--text-muted);">${classInfo.name}</div>
+            <div class="book-page cover-page">
+                <img src="front.jpg" alt="כריכה קדמית">
+                <div class="cover-class-overlay">${coverLabel}</div>
             </div>
         `;
 
-        // הוספת דבר המחנכת ושאר הברכות לפי הסדר (רק אם visible הוא true ויש טקסט)
+        // 2. הוספת דבר המחנכת ושאר הברכות לפי הסדר
         greetings.forEach(g => {
             const isVisible = (g.visible !== undefined) ? g.visible : true;
             if (isVisible && g.text && g.text.trim() !== "") {
@@ -804,21 +974,37 @@
             }
         });
 
-        // הוספת סיפורי התלמידים - כל סיפור בדף נפרד
+        // 3. הוספת סיפורי התלמידים - מצד ימין התמונה של הילד, ומשמאל הכותרת והמחבר, ואז הסיפור
         studentsSnap.forEach(docSnap => {
             const st = docSnap.data();
             if (st.stories && st.stories.length > 0) {
                 st.stories.forEach(story => {
+                    const photoHtml = st.photo 
+                        ? `<img src="${st.photo}" class="story-page-photo" alt="${st.firstName}">` 
+                        : ``;
+
                     html += `
                         <div class="book-page">
-                            <h2>${story.title || "סיפור ללא כותרת"}</h2>
-                            <div class="author-tag">מאת: ${st.firstName} ${st.lastName}</div>
+                            <div class="story-page-header">
+                                ${photoHtml}
+                                <div class="story-page-title-block">
+                                    <h2>${story.title || "סיפור ללא כותרת"}</h2>
+                                    <div class="author-tag">מאת: ${st.firstName} ${st.lastName}</div>
+                                </div>
+                            </div>
                             <p>${story.content || ""}</p>
                         </div>
                     `;
                 });
             }
         });
+
+        // 4. כריכה אחורית (back.jpg)
+        html += `
+            <div class="book-page cover-page">
+                <img src="back.jpg" alt="כריכה אחורית">
+            </div>
+        `;
 
         container.innerHTML = html;
     };
