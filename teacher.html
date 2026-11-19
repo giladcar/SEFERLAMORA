@@ -294,15 +294,18 @@
             display: block;
         }
         /* טקסט הכיתה שמופיע משמאל ל"על ידי כיתה" על הכריכה הקדמית */
-        .cover-class-overlay {
+       .cover-class-overlay {
             position: absolute;
-            top: 47.2%;
-            right: 43%;
-            font-size: 32px;
+            top: 46.8%;
+            right: 56%;
+            font-size: 36px;
             font-weight: bold;
             color: #3e1f14;
             font-family: Arial, Helvetica, sans-serif;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            text-shadow: 0 2px 4px rgba(255,255,255,0.95);
+            z-index: 10;
+            pointer-events: none;
+        }
         }
 
         /* עיצוב כותרת ותמונה בדף סיפור של תלמיד */
@@ -951,7 +954,9 @@
         const studentsSnap = await getDocs(q);
 
         // טקסט הכיתה שמופיע משמאל ל"על ידי כיתה" בכריכה הקדמית
-        const coverLabel = classInfo.shortLabel || `${classInfo.grade.replace('כיתה ', '')} ${classInfo.classNumber || ''}`;
+       const gradeClean = (classInfo.grade || "").replace('כיתה ', '').trim();
+        const numClean = classInfo.classNumber || (classInfo.name ? classInfo.name.split('-')[0].replace('כיתה', '').replace(gradeClean, '').trim() : '');
+        const coverLabel = classInfo.shortLabel || `${gradeClean} ${numClean}`.trim();
 
         // 1. כריכה קדמית (front.jpg)
         let html = `
