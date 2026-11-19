@@ -3,423 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>הסיפורים שלי - אתר התלמידים</title>
-    <style>
-        body {
-            font-family: Arial, Helvetica, sans-serif;
-            background-color: #fff8e1;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-            border: 4px solid #ffb74d;
-        }
-        h1, h2, h3 {
-            color: #e65100;
-            text-align: center;
-        }
-        .btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 15px 25px;
-            font-size: 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            margin: 8px;
-            font-weight: bold;
-            display: inline-block;
-            text-decoration: none;
-        }
-        .btn:hover { background-color: #45a049; }
-        .btn-blue { background-color: #2196F3; }
-        .btn-blue:hover { background-color: #0b7dda; }
-        .btn-orange { background-color: #ff9800; }
-        .btn-orange:hover { background-color: #e68a00; }
-        .btn-red { background-color: #f44336; }
-        .btn-red:hover { background-color: #da190b; }
-        .btn-home {
-            background-color: #9e9e9e;
-            padding: 8px 16px;
-            font-size: 16px;
-            margin: 0 0 15px 0;
-        }
-        .btn-home:hover { background-color: #757575; }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border: 2px solid #ffcc80;
-            border-radius: 10px;
-            font-size: 20px;
-            box-sizing: border-box;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-        .hidden { display: none; }
-        .code-box {
-            background: #e1f5fe;
-            border: 3px dashed #0288d1;
-            padding: 15px;
-            text-align: center;
-            border-radius: 12px;
-            margin: 15px 0;
-        }
-        .code-text {
-            font-size: 28px;
-            font-weight: bold;
-            color: #01579b;
-            letter-spacing: 3px;
-        }
-        .story-item {
-            background: #f1f8e9;
-            border: 2px solid #aed581;
-            border-radius: 12px;
-            padding: 15px;
-            margin: 10px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .save-status {
-            text-align: center;
-            font-size: 16px;
-            color: #2e7d32;
-            font-weight: bold;
-            height: 24px;
-        }
-    </style>
+    <title>פורטל ניהול למורה | ספר הסיפורים הכיתתי</title>
+    <link rel="stylesheet" href="teacher.css">
 </head>
 <body>
 
-<div class="container">
-    <a href="index.html" class="btn btn-home">🔙 חזור לדף הראשי</a>
-    <h1>🌟 עולם הסיפורים שלנו 🌟</h1>
-
-    <!-- מסך כניסה ראשי -->
-    <div id="welcome-screen" style="text-align: center;">
-        <p style="font-size: 22px;">שלום ילדים! בחרו מה תרצו לעשות:</p>
-        <button class="btn" onclick="showCreateProfile()">✨ צור פרופיל חדש</button>
-        <br><br>
-        <button class="btn btn-blue" onclick="showLogin()">🔑 היכנס לפרופיל קיים</button>
+<div class="topbar no-print">
+    <div style="display: flex; align-items: center; gap: 16px;">
+        <a href="index.html" class="btn btn-outline">&rarr; חזור לדף הראשי</a>
+        <div class="topbar-title">מערכת ניהול ספר סיפורים כיתתי | פורטל מורה</div>
     </div>
-
-    <!-- מסך יצירת פרופיל חדש -->
-    <div id="create-profile-screen" class="hidden">
-        <h2>יצירת פרופיל חדש</h2>
-        <label style="font-size: 18px; font-weight: bold;">1. בחרו את הכיתה שלכם:</label>
-        <select id="class-select">
-            <option value="">טוען כיתות...</option>
-        </select>
-
-        <label style="font-size: 18px; font-weight: bold;">2. שם פרטי:</label>
-        <input type="text" id="reg-first-name" placeholder="כתבו כאן שם פרטי">
-
-        <label style="font-size: 18px; font-weight: bold;">3. שם משפחה:</label>
-        <input type="text" id="reg-last-name" placeholder="כתבו כאן שם משפחה">
-
-        <div style="text-align: center; margin-top: 15px;">
-            <button class="btn" onclick="registerStudent()">🚀 צור פרופיל והתחל!</button>
-            <button class="btn btn-red" onclick="backToWelcome()">חזרה</button>
-        </div>
-    </div>
-
-    <!-- מסך התחברות לפרופיל קיים -->
-    <div id="login-screen" class="hidden">
-        <h2>כניסה לפרופיל קיים</h2>
-        <label style="font-size: 18px; font-weight: bold;">שם פרטי:</label>
-        <input type="text" id="login-first-name" placeholder="שם פרטי">
-
-        <label style="font-size: 18px; font-weight: bold;">שם משפחה:</label>
-        <input type="text" id="login-last-name" placeholder="שם משפחה">
-
-        <label style="font-size: 18px; font-weight: bold;">הקוד הסודי שלי (6 אותיות ומספרים):</label>
-        <input type="text" id="login-code" maxlength="6" placeholder="לדוגמה: A1B2C3" style="text-transform: uppercase;">
-
-        <div style="text-align: center; margin-top: 15px;">
-            <button class="btn btn-blue" onclick="loginStudent()">🔓 היכנס</button>
-            <button class="btn btn-red" onclick="backToWelcome()">חזרה</button>
-        </div>
-    </div>
-
-    <!-- מסך הבית של התלמיד (אחרי התחברות) -->
-    <div id="student-home-screen" class="hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 id="student-greeting" style="margin: 0;"></h2>
-            <button class="btn btn-red" style="padding: 10px 15px; font-size: 16px;" onclick="logout()">🚪 יציאה</button>
-        </div>
-
-        <div class="code-box">
-            <div>הקוד האישי שלך לכניסה הבאה (שמור אותו!):</div>
-            <div id="my-secret-code" class="code-text"></div>
-        </div>
-
-        <div style="text-align: center; margin: 20px 0;">
-            <button id="new-story-btn" class="btn" onclick="createNewStory()">📝 צור סיפור חדש</button>
-            <p id="max-stories-msg" class="hidden" style="color: red; font-weight: bold;">הגעת למקסימום של 5 סיפורים! אפשר לערוך סיפור קיים.</p>
-        </div>
-
-        <h3>הסיפורים שלי:</h3>
-        <div id="my-stories-list"></div>
-    </div>
-
-    <!-- מסך כתיבת ועריכת סיפור (עם שמירה אוטומטית כל רגע) -->
-    <div id="story-editor-screen" class="hidden">
-        <h2>כתיבת סיפור</h2>
-        <div id="auto-save-indicator" class="save-status">הסיפור נשמר אוטומטית בזמן הכתיבה ✨</div>
-
-        <label style="font-size: 18px; font-weight: bold;">שם הסיפור:</label>
-        <input type="text" id="story-title-input" placeholder="כתבו כאן את שם הסיפור..." oninput="triggerAutoSave()">
-
-        <label style="font-size: 18px; font-weight: bold;">הסיפור שלי:</label>
-        <textarea id="story-content-input" rows="10" placeholder="התחילו לכתוב כאן את הסיפור..." oninput="triggerAutoSave()"></textarea>
-
-        <div style="text-align: center; margin-top: 15px;">
-            <button class="btn" onclick="saveAndExitEditor()">💾 שמור סיפור וחזור למסך הבית</button>
-        </div>
-    </div>
+    <button id="logout-btn" class="btn btn-danger hidden" onclick="teacherLogout()">יציאה מהמערכת</button>
 </div>
 
-<!-- חיבור ל-Firebase -->
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<div class="container">
 
-    // =========================================================================
-    // הגדרות Firebase האמיתיות שלך
-    // =========================================================================
-    const firebaseConfig = {
-        apiKey: "AIzaSyB2yx6GiaeWX5nYQhdh8c3-2k2XvblRRN0",
-        authDomain: "siporim-64515.firebaseapp.com",
-        projectId: "siporim-64515",
-        storageBucket: "siporim-64515.firebasestorage.app",
-        messagingSenderId: "701042104939",
-        appId: "1:701042104939:web:31df33c0b18beec2b26f2e",
-        measurementId: "G-D0TQ44WC9B"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    let currentStudentId = null;
-    let currentStudentData = null;
-    let currentStoryIndex = -1;
-    let saveTimeout = null;
-
-    // יצירת קוד אקראי בן 6 תווים (אותיות גדולות ומספרים)
-    function generateSixCharCode() {
-        const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        let code = "";
-        for (let i = 0; i < 6; i++) {
-            code += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return code;
-    }
-
-    // ניווט במסכי פתיחה
-    window.showCreateProfile = async () => {
-        document.getElementById('welcome-screen').classList.add('hidden');
-        document.getElementById('create-profile-screen').classList.remove('hidden');
+    <!-- מסך אבטחה: כניסת מורה -->
+    <div id="teacher-login-screen" class="login-wrapper">
+        <h2 style="text-align: center; border: none; margin-bottom: 8px;">כניסה לאזור ניהול</h2>
+        <p style="text-align: center; color: var(--text-muted); font-size: 14px; margin-bottom: 24px;">
+            הזן סיסמת מורה (10 תווים)
+        </p>
         
-        const select = document.getElementById('class-select');
-        select.innerHTML = '<option value="">בוחר כיתה...</option>';
-        const classesSnap = await getDocs(collection(db, "classes"));
-        classesSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            select.innerHTML += `<option value="${docSnap.id}">${data.name}</option>`;
-        });
-    };
+        <label for="teacher-password-input">סיסמת גישה</label>
+        <input type="password" id="teacher-password-input" maxlength="10" placeholder="••••••••••" style="text-align: center; font-size: 18px; letter-spacing: 3px;">
+        
+        <button class="btn btn-dark" style="width: 100%; justify-content: center; padding: 12px;" onclick="verifyTeacherPassword()">התחברות למערכת</button>
+        
+        <p id="login-error-msg" style="color: var(--danger); font-size: 14px; text-align: center; margin-top: 12px; display: none;">
+            הסיסמה שהוזנה שגויה. נסה שוב.
+        </p>
+    </div>
 
-    window.showLogin = () => {
-        document.getElementById('welcome-screen').classList.add('hidden');
-        document.getElementById('login-screen').classList.remove('hidden');
-    };
+    <!-- מסך ראשי: רשימת כיתות ויצירת כיתה -->
+    <div id="main-screen" class="hidden">
+        <div class="panel">
+            <div class="header-actions">
+                <h2 style="border: none; margin: 0;">הכיתות שלי</h2>
+                <button class="btn" onclick="showCreateClassStep1()">+ יצירת כיתה חדשה</button>
+            </div>
 
-    window.backToWelcome = () => {
-        document.getElementById('create-profile-screen').classList.add('hidden');
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('welcome-screen').classList.remove('hidden');
-    };
+            <!-- שלב 1 יצירת כיתה -->
+            <div id="create-class-step1" class="sub-box hidden">
+                <h3>שלב 1 מתוך 2: בחירת שכבת גיל (חובה)</h3>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-dark" onclick="selectGrade('כיתה א\'')">כיתה א'</button>
+                    <button class="btn btn-dark" onclick="selectGrade('כיתה ב\'')">כיתה ב'</button>
+                    <button class="btn btn-outline" onclick="cancelCreateClass()">ביטול</button>
+                </div>
+            </div>
 
-    // הרשמת תלמיד חדש
-    window.registerStudent = async () => {
-        const classId = document.getElementById('class-select').value;
-        const firstName = document.getElementById('reg-first-name').value.trim();
-        const lastName = document.getElementById('reg-last-name').value.trim();
+            <!-- שלב 2 יצירת כיתה -->
+            <div id="create-class-step2" class="sub-box hidden">
+                <h3>שלב 2 מתוך 2: פרטי הכיתה (<span id="selected-grade-display"></span>)</h3>
+                <div style="max-width: 380px;">
+                    <label for="class-number-select">מספר כיתה (0–10) (חובה) *</label>
+                    <select id="class-number-select" required>
+                        <option value="">-- בחר מספר כיתה --</option>
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
 
-        if (!classId || !firstName || !lastName) {
-            alert("נא לבחור כיתה ולמלא שם פרטי ושם משפחה!");
-            return;
-        }
+                    <label for="hebrew-year-select">שנה עברית (חובה) *</label>
+                    <select id="hebrew-year-select" required>
+                        <option value="תשפ״ו">תשפ"ו</option>
+                        <option value="תשפ״ז" selected>תשפ"ז</option>
+                        <option value="תשפ״ח">תשפ"ח</option>
+                        <option value="תשפ״ט">תשפ"ט</option>
+                        <option value="תש״ץ">תש"ץ</option>
+                        <option value="תשצ״א">תשצ"א</option>
+                        <option value="תשצ״ב">תשצ"ב</option>
+                        <option value="תשצ״ג">תשצ"ג</option>
+                        <option value="תשצ״ד">תשצ"ד</option>
+                        <option value="תשצ״ה">תשצ"ה</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-success" onclick="finishCreateClass()">אישור ויצירת כיתה</button>
+                    <button class="btn btn-outline" onclick="cancelCreateClass()">ביטול</button>
+                </div>
+            </div>
 
-        const newCode = generateSixCharCode();
-        const newStudent = {
-            classId: classId,
-            firstName: firstName,
-            lastName: lastName,
-            code: newCode,
-            stories: []
-        };
+            <div id="classes-list" class="grid">
+                <p style="color: var(--text-muted);">טוען נתונים...</p>
+            </div>
+        </div>
+    </div>
 
-        try {
-            const docRef = await addDoc(collection(db, "students"), newStudent);
-            currentStudentId = docRef.id;
-            currentStudentData = newStudent;
-            document.getElementById('create-profile-screen').classList.add('hidden');
-            openStudentHome();
-        } catch (e) {
-            alert("שגיאה ביצירת פרופיל. בדוק את החיבור לענן.");
-            console.error(e);
-        }
-    };
+    <!-- מסך ניהול כיתה ספציפית -->
+    <div id="class-screen" class="hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <button class="btn btn-outline" onclick="backToMain()">&rarr; חזרה לרשימת הכיתות</button>
+            <button class="btn btn-danger" onclick="deleteCurrentClass()">מחק כיתה</button>
+        </div>
 
-    // התחברות לפרופיל קיים
-    window.loginStudent = async () => {
-        const firstName = document.getElementById('login-first-name').value.trim();
-        const lastName = document.getElementById('login-last-name').value.trim();
-        const code = document.getElementById('login-code').value.trim().toUpperCase();
+        <div class="panel">
+            <div class="header-actions">
+                <h2 id="class-title" style="border: none; margin: 0;"></h2>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-outline" onclick="showGreetingsEditor()">עריכת דברי פתיחה וברכות</button>
+                    <button class="btn btn-success" onclick="generateBook()">הפקת הספר המלא</button>
+                </div>
+            </div>
 
-        if (!firstName || !lastName || !code) {
-            alert("נא למלא את כל הפרטים ואת הקוד!");
-            return;
-        }
+            <h3>תלמידים רשומים בכיתה</h3>
+            <p style="font-size: 14px; color: var(--text-muted); margin-top: -8px;">לחץ על כרטיס תלמיד לצפייה בסיפורים, העלאת תמונת תלמיד וצפייה בקוד הגישה.</p>
+            <div id="students-list" class="grid"></div>
+        </div>
+    </div>
 
-        const q = query(
-            collection(db, "students"),
-            where("firstName", "==", firstName),
-            where("lastName", "==", lastName),
-            where("code", "==", code)
-        );
+    <!-- מסך פרופיל תלמיד עבור המורה -->
+    <div id="student-detail-screen" class="hidden">
+        <div style="margin-bottom: 16px;">
+            <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לכיתה</button>
+        </div>
 
-        const snap = await getDocs(q);
-        if (snap.empty) {
-            alert("השם או הקוד שגויים. נסו שוב או בקשו מהמורה לבדוק את הקוד.");
-            return;
-        }
+        <div class="panel">
+            <div class="header-actions">
+                <h2 id="student-detail-name" style="border: none; margin: 0;"></h2>
+                <div>
+                    <span style="font-size: 14px; color: var(--text-muted); margin-left: 8px;">קוד גישה אישי:</span>
+                    <span id="student-detail-code" class="code-badge"></span>
+                </div>
+            </div>
 
-        snap.forEach(docSnap => {
-            currentStudentId = docSnap.id;
-            currentStudentData = docSnap.data();
-        });
+            <div class="sub-box" style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+                <img id="student-photo-preview" class="student-photo-preview" src="" alt="תמונת תלמיד" style="display: none;">
+                <div id="student-no-photo-box" style="width: 110px; height: 110px; border-radius: 8px; border: 2px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 13px; text-align: center;">
+                    אין תמונה
+                </div>
+                <div style="flex: 1; min-width: 220px;">
+                    <label for="student-photo-upload">תמונת התלמיד לספר (תוצג מימין לכותרת הסיפור)</label>
+                    <input type="file" id="student-photo-upload" accept="image/*" onchange="handleStudentPhotoUpload(event)" style="margin-bottom: 8px;">
+                    <div id="photo-upload-status" style="font-size: 13px; color: var(--success); font-weight: bold;"></div>
+                </div>
+            </div>
 
-        document.getElementById('login-screen').classList.add('hidden');
-        openStudentHome();
-    };
+            <h3>סיפורי התלמיד</h3>
+            <div id="student-stories-list"></div>
+        </div>
+    </div>
 
-    // מסך הבית של התלמיד
-    function openStudentHome() {
-        document.getElementById('student-home-screen').classList.remove('hidden');
-        document.getElementById('student-greeting').innerText = `שלום, ${currentStudentData.firstName} ${currentStudentData.lastName}!`;
-        document.getElementById('my-secret-code').innerText = currentStudentData.code;
+    <!-- מסך עריכת דבר המחנכת ו-10 דברים נוספים -->
+    <div id="greetings-screen" class="hidden">
+        <div style="margin-bottom: 16px;">
+            <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לכיתה</button>
+        </div>
 
-        const stories = currentStudentData.stories || [];
-        const listDiv = document.getElementById('my-stories-list');
-        listDiv.innerHTML = "";
+        <div class="panel">
+            <h2>עריכת דברי פתיחה וברכות לספר</h2>
+            <div id="greetings-autosave-status" class="autosave-banner">
+                כל השינויים נשמרים אוטומטית בענן בזמן ההקלדה ✓
+            </div>
+            
+            <div id="greeting-box-0" class="sub-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3 style="margin: 0;">1. דבר המחנכת (עמוד פתיחה ראשי)</h3>
+                    <button type="button" id="toggle-btn-0" class="toggle-visible" onclick="toggleGreetingVisibility(0)">👁️ להראות בספר (מוצג)</button>
+                </div>
+                <label>כותרת הקטע</label>
+                <input type="text" id="greeting-title-0" value="דבר המחנכת" oninput="triggerGreetingsAutoSave()">
+                <label>תוכן הדברים</label>
+                <textarea id="greeting-text-0" rows="5" placeholder="הזן כאן את דבר המחנכת..." oninput="triggerGreetingsAutoSave()"></textarea>
+            </div>
 
-        // הגבלה לעד 5 סיפורים
-        if (stories.length >= 5) {
-            document.getElementById('new-story-btn').classList.add('hidden');
-            document.getElementById('max-stories-msg').classList.remove('hidden');
-        } else {
-            document.getElementById('new-story-btn').classList.remove('hidden');
-            document.getElementById('max-stories-msg').classList.add('hidden');
-        }
+            <div id="extra-greetings-container"></div>
+        </div>
+    </div>
 
-        if (stories.length === 0) {
-            listDiv.innerHTML = "<p style='text-align:center;'>עדיין לא כתבת סיפורים. לחץ על 'צור סיפור חדש' למעלה!</p>";
-            return;
-        }
+    <!-- מסך תצוגת הספר המחולק לדפים -->
+    <div id="book-view" class="hidden">
+        <div class="panel no-print" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn btn-outline" onclick="backToClass()">&rarr; חזרה לניהול הכיתה</button>
+            <div>
+                <button class="btn btn-dark" onclick="window.print()">הדפסה / שמירה כקובץ PDF</button>
+            </div>
+        </div>
+        <div id="book-pages-container"></div>
+    </div>
 
-        stories.forEach((story, index) => {
-            const item = document.createElement('div');
-            item.className = 'story-item';
-            item.innerHTML = `
-                <span style="font-size: 20px; font-weight: bold;">📖 ${story.title || "סיפור ללא שם"}</span>
-                <button class="btn btn-orange" style="padding: 10px 15px; font-size: 16px;" onclick="editStory(${index})">✏️ ערוך סיפור</button>
-            `;
-            listDiv.appendChild(item);
-        });
-    }
+</div>
 
-    // יצירת סיפור חדש
-    window.createNewStory = () => {
-        if (!currentStudentData.stories) currentStudentData.stories = [];
-        if (currentStudentData.stories.length >= 5) return;
-
-        currentStudentData.stories.push({ title: "", content: "" });
-        currentStoryIndex = currentStudentData.stories.length - 1;
-        openEditor();
-    };
-
-    // עריכת סיפור קיים
-    window.editStory = (index) => {
-        currentStoryIndex = index;
-        openEditor();
-    };
-
-    function openEditor() {
-        document.getElementById('student-home-screen').classList.add('hidden');
-        document.getElementById('story-editor-screen').classList.remove('hidden');
-
-        const story = currentStudentData.stories[currentStoryIndex];
-        document.getElementById('story-title-input').value = story.title;
-        document.getElementById('story-content-input').value = story.content;
-    }
-
-    // שמירה אוטומטית כל רגע (Auto-save)
-    window.triggerAutoSave = () => {
-        const indicator = document.getElementById('auto-save-indicator');
-        indicator.innerText = "שומר שינויים... ⏳";
-        indicator.style.color = "#e65100";
-
-        // עדכון בזיכרון המקומי מיד
-        currentStudentData.stories[currentStoryIndex] = {
-            title: document.getElementById('story-title-input').value,
-            content: document.getElementById('story-content-input').value
-        };
-
-        // שמירה לענן חצי שנייה אחרי הפסקת ההקלדה כדי לא להעמיס על הרשת
-        clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(async () => {
-            await saveStoriesToCloud();
-            indicator.innerText = "נשמר בענן בהצלחה! ✅";
-            indicator.style.color = "#2e7d32";
-        }, 500);
-    };
-
-    async function saveStoriesToCloud() {
-        if (!currentStudentId) return;
-        await updateDoc(doc(db, "students", currentStudentId), {
-            stories: currentStudentData.stories
-        });
-    }
-
-    window.saveAndExitEditor = async () => {
-        clearTimeout(saveTimeout);
-        currentStudentData.stories[currentStoryIndex] = {
-            title: document.getElementById('story-title-input').value,
-            content: document.getElementById('story-content-input').value
-        };
-        await saveStoriesToCloud();
-        document.getElementById('story-editor-screen').classList.add('hidden');
-        openStudentHome();
-    };
-
-    // יציאה מהפרופיל
-    window.logout = () => {
-        currentStudentId = null;
-        currentStudentData = null;
-        document.getElementById('student-home-screen').classList.add('hidden');
-        document.getElementById('welcome-screen').classList.remove('hidden');
-    };
-</script>
+<!-- טעינת קובץ ה-JS הראשי שמייבא את שאר המודולים -->
+<script type="module" src="teacher-main.js"></script>
 
 </body>
 </html>
